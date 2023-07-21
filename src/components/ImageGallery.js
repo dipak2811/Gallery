@@ -13,6 +13,7 @@ const ImageGallery = () => {
   useEffect(() => {
     fetchImages();
   }, []);
+  console.log(images);
 
   useEffect(() => {
     clearTimeout(debounceTimeout);
@@ -41,8 +42,8 @@ const ImageGallery = () => {
   };
 
   const handleClearSearch = () => {
-    setSearchKeyword(""); // Clear the search input
-    setSearchImage([]); // Clear the filtered image list
+    setSearchKeyword("");
+    setSearchImage([]);
   };
 
   const fetchImages = async () => {

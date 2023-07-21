@@ -13,7 +13,6 @@ const ImageGallery = () => {
   useEffect(() => {
     fetchImages();
   }, []);
-  console.log(images);
 
   useEffect(() => {
     clearTimeout(debounceTimeout);

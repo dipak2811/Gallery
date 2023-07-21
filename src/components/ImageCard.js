@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { addImageToAlbum, getAlbums } from "../services/api";
+import { addImageToAlbum, getAlbums,addImageLike,addCommentToImage } from "../services/api";
 import { ToastContainer, toast } from "react-toastify";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHeart, faCloudArrowDown, faFolderPlus } from "@fortawesome/free-solid-svg-icons";
+import { faHeart as farHeart, faComment } from "@fortawesome/free-regular-svg-icons";
 import "react-toastify/dist/ReactToastify.css";
-
+import { Modal, Button, Form } from "react-bootstrap";
 
 const ImageCard = ({ image }) => {
   const [selectedAlbum, setSelectedAlbum] = useState("");
   const [albums, setAlbums] = useState([]);
-  const [liked, setLiked] = useState(false);
   const [comment, setComment] = useState("");
+  const [showCommentModal, setShowCommentModal] = useState(false);
   const [tags, setTags] = useState([]);
+  const [showAlbumModal, setShowAlbumModal] = useState(false);
 
   useEffect(() => {
     fetchAlbums();
@@ -58,19 +62,35 @@ const ImageCard = ({ image }) => {
     }
   };
 
-  const handleLike = () => {
-    // Placeholder function for handling like
-    setLiked(!liked);
+  const handleLike = async () => {
+    try {
+      const response = await addImageLike(image._id);
+    } catch (error) {
+      toast.error("Failed to like image", {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
+    }
   };
+  
 
-  const handleCommentChange = (e) => {
+  const handleCommentChange = (e) => {  
     setComment(e.target.value);
   };
 
-  const handleAddComment = () => {
-    // Placeholder function for adding a comment
-    console.log("Comment:", comment);
-    setComment("");
+  const handleAddComment = async () => {
+    try {
+      const response = await addCommentToImage(image._id, { comment });
+      setComment("");
+    } catch (error) {
+      toast.error("Failed to add comment", {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
+    }
+    // setShowCommentModal(false);
   };
 
   const handleTagChange = (e) => {
@@ -87,10 +107,8 @@ const ImageCard = ({ image }) => {
 
   const handleDownload = async () => {
     try {
-        const response = await fetch(image.imageUrl);
-      console.log(response);
+      const response = await fetch(image.imageUrl);
       const blob = await response.blob();
-
       const downloadUrl = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = downloadUrl;
@@ -114,45 +132,59 @@ const ImageCard = ({ image }) => {
       <img className="card-img-top" src={image.imageUrl} alt={image.title} />
       <div className="card-body">
         <h5 className="card-title">{image.title}</h5>
-        <div className="form-group">
-          <select
-            className="form-control"
-            value={selectedAlbum}
-            onChange={handleAlbumChange}
-          >
-            <option value="">Select Album</option>
-            {albums.map((album) => (
-              <option key={album._id} value={album._id}>
-                {album.title}
-              </option>
-            ))}
-          </select>
-        </div>
-        <button className="btn btn-primary mt-3" onClick={handleAddToAlbum}>
-          Add to Album
-        </button>
-
         {/* Like Section */}
         <div className="mt-3">
-          <button
-            className={`btn ${liked ? "btn-danger" : "btn-secondary"}`}
-            onClick={handleLike}
-          >
-            {liked ? "Unlike" : "Like"}
+          <button className="btn border-0 px-2" onClick={handleLike}>
+            {image.like ? (
+              <FontAwesomeIcon
+                icon={faHeart}
+                className="fa-2x"
+                style={{ color: "red" }}
+              />
+            ) : (
+              <FontAwesomeIcon icon={farHeart} className="fa-2x" />
+            )}
+          </button>
+          <button className="btn border-0 px-2" onClick={() => setShowCommentModal(true)}>
+            <FontAwesomeIcon icon={faComment} className="fa-2x" />
+          </button>
+          <button className="btn border-0 px-2" onClick={handleDownload}>
+            <FontAwesomeIcon icon={faCloudArrowDown} className="fa-2x" />
+          </button>
+          <button className="btn border-0 px-2" onClick={() => setShowAlbumModal(true)}>
+            <FontAwesomeIcon icon={faFolderPlus} className="fa-2x" />
           </button>
         </div>
 
         {/* Comment Section */}
         <div className="mt-3">
-          <input
-            type="text"
-            value={comment}
-            onChange={handleCommentChange}
-            placeholder="Enter your comment..."
-          />
-          <button className="btn btn-primary" onClick={handleAddComment}>
-            Add Comment
-          </button>
+          {/* Add Comment Modal */}
+          <Modal show={showCommentModal} onHide={() => setShowCommentModal(false)}>
+            <Modal.Header closeButton>
+              <Modal.Title>Comments</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <ul>
+                {image.comments.map((comment, index) => (
+                  <li key={index}>{comment}</li>
+                ))}
+              </ul>
+              <input
+                type="text"
+                value={comment}
+                onChange={handleCommentChange}
+                placeholder="Enter your comment..."
+              />
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="primary" onClick={handleAddComment}>
+                Add Comment
+              </Button>
+              <Button variant="secondary" onClick={() => setShowCommentModal(false)}>
+                Close
+              </Button>
+            </Modal.Footer>
+          </Modal>
         </div>
 
         {/* Tag Section */}
@@ -167,14 +199,39 @@ const ImageCard = ({ image }) => {
             Add Tags
           </button>
         </div>
-
-        {/* Download Button */}
-        <button className="btn btn-primary mt-3" onClick={handleDownload}>
-          Download
-        </button>
       </div>
-      {/* React Toastify Container */}
       <ToastContainer />
+
+      {/* Add to Album Modal */}
+      <Modal show={showAlbumModal} onHide={() => setShowAlbumModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Add to Album</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="form-group">
+            <select
+              className="form-control"
+              value={selectedAlbum}
+              onChange={handleAlbumChange}
+            >
+              <option value="">Select Album</option>
+              {albums.map((album) => (
+                <option key={album._id} value={album._id}>
+                  {album.title}
+                </option>
+              ))}
+            </select>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={handleAddToAlbum}>
+            Add to Album
+          </Button>
+          <Button variant="secondary" onClick={() => setShowAlbumModal(false)}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

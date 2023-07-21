@@ -1,6 +1,11 @@
 const Image = require("../models/Image");
-const upload = require("../utils/multerConfig");
 const admin = require("firebase-admin");
+const serviceAccount = require("../utils/gallery-app-5a68a-firebase-adminsdk-zsouo-b2729555df.json");
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  storageBucket: "gs://gallery-app-5a68a.appspot.com",
+});
+const bucket = admin.storage().bucket();
 
 // Get all images
 exports.getAllImages = async (req, res) => {
@@ -26,12 +31,6 @@ exports.getImageById = async (req, res) => {
   }
 };
 
-const serviceAccount = require("../utils/gallery-app-5a68a-firebase-adminsdk-zsouo-b2729555df.json");
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  storageBucket: "gs://gallery-app-5a68a.appspot.com",
-});
-const bucket = admin.storage().bucket();
 
 
 // Upload image
@@ -66,7 +65,7 @@ exports.likeImage = async (req, res) => {
     if (!image) {
       return res.status(404).json({ error: "Image not found" });
     }
-    image.likes += 1;
+    image.like = !image.like;
     await image.save();
     res.status(200).json(image);
   } catch (error) {
@@ -91,17 +90,6 @@ exports.commentOnImage = async (req, res) => {
   }
 };
 
-// Search images by keyword
-exports.searchImages = async (req, res) => {
-  const { keyword } = req.params;
-  try {
-    const images = await Image.find({ $text: { $search: keyword } });
-    res.status(200).json(images);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to search images" });
-  }
-};
-
 // Filter images by date
 exports.filterImagesByDate = async (req, res) => {
   try {
@@ -121,11 +109,6 @@ exports.filterImagesByTag = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: "Failed to filter images by tag" });
   }
-};
-
-// Download image (Not implemented in this example, but you can add it as needed)
-exports.downloadImage = async (req, res) => {
-  // Implement download image logic here
 };
 
 // Share image on social media (Not implemented in this example, but you can add it as needed)

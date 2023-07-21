@@ -18,17 +18,11 @@ router.put('/:id/like', imageController.likeImage);
 // Comment on image
 router.post('/:id/comment', imageController.commentOnImage);
 
-// Search images by keyword
-router.get('/search/:keyword', imageController.searchImages);
-
 // Filter images by date
 router.get('/filter/date', imageController.filterImagesByDate);
 
 // Filter images by tag
 router.get('/filter/tag/:tag', imageController.filterImagesByTag);
-
-// Download image
-router.get('/:id/download', imageController.downloadImage);
 
 // Share image on social media (implement as needed)
 router.post('/:id/share', imageController.shareImage);

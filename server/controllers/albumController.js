@@ -1,17 +1,18 @@
 const Album = require("../models/Album");
 const Image = require("../models/Image");
 
-// Get all albums
+// Get all albums for a specific user with user information populated
 exports.getAllAlbums = async (req, res) => {
+  const { userId } = req.params;
   try {
-    const albums = await Album.find();
+    const albums = await Album.find({ userId: userId }).populate("userId");
     res.status(200).json(albums);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch albums" });
   }
 };
 
-// Get album by ID
+// Get album by ID with images populated
 exports.getAlbumById = async (req, res) => {
   const { id } = req.params;
   try {
@@ -25,11 +26,12 @@ exports.getAlbumById = async (req, res) => {
   }
 };
 
-// Create album
+// Create a new album for a specific user
 exports.createAlbum = async (req, res) => {
+  const { userId } = req.params;
   const { title } = req.body;
   try {
-    const album = new Album({ title });
+    const album = new Album({ title, userId });
     await album.save();
     res.status(201).json(album);
   } catch (error) {

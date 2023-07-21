@@ -1,8 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const imageRoutes = require("./routes/imageRoutes");
-const albumRoutes = require("./routes/albumRoutes");
+const userRoutes = require('./routes/userRoutes');
+const albumRoutes = require('./routes/albumRoutes');
+const imageRoutes = require('./routes/imageRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -24,9 +25,10 @@ connection.once("open", () => {
   console.log("MongoDB database connection established successfully");
 });
 
-// Routes
-app.use("/images", imageRoutes);
-app.use("/albums", albumRoutes);
+app.use('/users', userRoutes);
+app.use('/albums', albumRoutes);
+app.use('/images', imageRoutes);
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

@@ -7,21 +7,23 @@ admin.initializeApp({
 });
 const bucket = admin.storage().bucket();
 
-// Get all images
+// Get all images for authenticated user
 exports.getAllImages = async (req, res) => {
   try {
-    const images = await Image.find();
+    const userId = req.user._id; // Fetch the user ID from the authenticated request
+    const images = await Image.find({ userId });
     res.status(200).json(images);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch images" });
   }
 };
 
-// Get image by ID
+// Get image by ID for authenticated user
 exports.getImageById = async (req, res) => {
   const { id } = req.params;
+  const userId = req.user._id; // Fetch the user ID from the authenticated request
   try {
-    const image = await Image.findById(id);
+    const image = await Image.findOne({ _id: id, userId });
     if (!image) {
       return res.status(404).json({ error: "Image not found" });
     }
@@ -31,9 +33,7 @@ exports.getImageById = async (req, res) => {
   }
 };
 
-
-
-// Upload image
+// Upload image for authenticated user
 exports.uploadImage = async (req, res) => {
   try {
     if (!req.file) {
@@ -42,6 +42,7 @@ exports.uploadImage = async (req, res) => {
     const imageUrl = req.file.path;
     const { title } = req.body;
     const filename = req.file.filename;
+    const userId = req.user._id; // Fetch the user ID from the authenticated request
     await bucket.upload(imageUrl, {
       destination: `images/${filename}`,
     });
@@ -49,7 +50,7 @@ exports.uploadImage = async (req, res) => {
       action: "read",
       expires: "03-01-2500",
     });
-    const image = new Image({ title, imageUrl: downloadUrl[0] });
+    const image = new Image({ title, imageUrl: downloadUrl[0], userId });
     await image.save();
     res.status(201).json(image);
   } catch (error) {
@@ -57,11 +58,12 @@ exports.uploadImage = async (req, res) => {
   }
 };
 
-// Like image
+// Like image for authenticated user
 exports.likeImage = async (req, res) => {
   const { id } = req.params;
+  const userId = req.user._id; // Fetch the user ID from the authenticated request
   try {
-    const image = await Image.findById(id);
+    const image = await Image.findOne({ _id: id, userId });
     if (!image) {
       return res.status(404).json({ error: "Image not found" });
     }
@@ -73,12 +75,13 @@ exports.likeImage = async (req, res) => {
   }
 };
 
-// Comment on image
+// Comment on image for authenticated user
 exports.commentOnImage = async (req, res) => {
   const { id } = req.params;
   const { comment } = req.body;
+  const userId = req.user._id; // Fetch the user ID from the authenticated request
   try {
-    const image = await Image.findById(id);
+    const image = await Image.findOne({ _id: id, userId });
     if (!image) {
       return res.status(404).json({ error: "Image not found" });
     }
@@ -90,21 +93,25 @@ exports.commentOnImage = async (req, res) => {
   }
 };
 
-// Filter images by date
+// ... (previous code)
+
+// Filter images by date for authenticated user
 exports.filterImagesByDate = async (req, res) => {
   try {
-    const images = await Image.find().sort({ date: -1 });
+    const userId = req.user._id; // Fetch the user ID from the authenticated request
+    const images = await Image.find({ userId }).sort({ date: -1 });
     res.status(200).json(images);
   } catch (error) {
     res.status(500).json({ error: "Failed to filter images by date" });
   }
 };
 
-// Filter images by tag
+// Filter images by tag for authenticated user
 exports.filterImagesByTag = async (req, res) => {
   const { tag } = req.params;
+  const userId = req.user._id; // Fetch the user ID from the authenticated request
   try {
-    const images = await Image.find({ tags: tag });
+    const images = await Image.find({ tags: tag, userId });
     res.status(200).json(images);
   } catch (error) {
     res.status(500).json({ error: "Failed to filter images by tag" });
@@ -115,3 +122,5 @@ exports.filterImagesByTag = async (req, res) => {
 exports.shareImage = async (req, res) => {
   // Implement share image logic here
 };
+
+module.exports = exports;

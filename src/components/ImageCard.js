@@ -132,7 +132,6 @@ const ImageCard = ({ image }) => {
       <img className="card-img-top" src={image.imageUrl} alt={image.title} />
       <div className="card-body">
         <h5 className="card-title">{image.title}</h5>
-        {/* Like Section */}
         <div className="mt-3">
           <button className="btn border-0 px-2" onClick={handleLike}>
             {image.like ? (
@@ -155,10 +154,7 @@ const ImageCard = ({ image }) => {
             <FontAwesomeIcon icon={faFolderPlus} className="fa-2x" />
           </button>
         </div>
-
-        {/* Comment Section */}
         <div className="mt-3">
-          {/* Add Comment Modal */}
           <Modal show={showCommentModal} onHide={() => setShowCommentModal(false)}>
             <Modal.Header closeButton>
               <Modal.Title>Comments</Modal.Title>
@@ -186,9 +182,7 @@ const ImageCard = ({ image }) => {
             </Modal.Footer>
           </Modal>
         </div>
-
-        {/* Tag Section */}
-        <div className="mt-3">
+        {/* <div className="mt-3">
           <input
             type="text"
             value={tags.join(", ")}
@@ -198,11 +192,9 @@ const ImageCard = ({ image }) => {
           <button className="btn btn-primary" onClick={handleAddTags}>
             Add Tags
           </button>
-        </div>
+        </div> */}
       </div>
       <ToastContainer />
-
-      {/* Add to Album Modal */}
       <Modal show={showAlbumModal} onHide={() => setShowAlbumModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Add to Album</Modal.Title>

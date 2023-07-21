@@ -1,14 +1,22 @@
 import axios from "axios";
+const token = localStorage.getItem("token");
+const User = JSON.parse(localStorage.getItem("user"));
+const UserId = User?.id;
 
+console.log(token);
 const BASE_URL = "http://localhost:5000"; 
 
 const api = axios.create({
   baseURL: BASE_URL,
 });
-
+api.defaults.headers.common['Authorization'] = `${token}`;
+api.defaults.headers.post['Content-Type'] = 'application/json';
 export const uploadImage = async (formData) => {
   try {
-    const response = await api.post("/images/upload", formData);
+    const response = await api.post("/images/upload", formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      }});
     return response.data;
   } catch (error) {
     throw new Error("Failed to upload image");
@@ -26,7 +34,7 @@ export const getImages = async () => {
 
 export const createAlbum = async (albumData) => {
   try {
-    const response = await api.post("/albums/create", albumData);
+    const response = await api.post(`/albums/${UserId}/create`, albumData);
     return response.data;
   } catch (error) {
     throw new Error("Failed to create album");
@@ -35,7 +43,7 @@ export const createAlbum = async (albumData) => {
 
 export const getAlbums = async () => {
   try {
-    const response = await api.get("/albums");
+    const response = await api.get(`/albums/${UserId}`);
     return response.data;
   } catch (error) {
     throw new Error("Failed to fetch albums");
@@ -44,7 +52,7 @@ export const getAlbums = async () => {
 
 export const addImageToAlbum = async (albumId, imageId) => {
   try {
-    const response = await api.post(`/albums/${albumId}/add/${imageId}`);
+    const response = await api.put(`/albums/${albumId}/addImage/${imageId}`);
     return response.data;
   } catch (error) {
     throw new Error("Failed to add image to album");
@@ -53,7 +61,7 @@ export const addImageToAlbum = async (albumId, imageId) => {
 
 export const getImagesInAlbum = async (albumId) => {
   try {
-    const response = await api.get(`/albums/${albumId}`);
+    const response = await api.get(`/albums/album/${albumId}`);
     return response.data;
   } catch (error) {
     throw new Error("Failed to fetch images in the album");
@@ -78,4 +86,21 @@ export const addCommentToImage = async (imageId, comment) => {
   }
 };
 
+export const loginUser = async (user) => {
+  try {
+    const response = await api.post(`/users/login`,user);
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to login");
+  }
+};
+
+export const registerUser = async (user) => {
+  try {
+    const response = await api.post(`/users/register`,user);
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to register");
+  }
+};
 // Add more API calls as needed for filtering, searching, etc.

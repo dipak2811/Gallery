@@ -1,22 +1,25 @@
 const express = require('express');
 const router = express.Router();
 const imageController = require('../controllers/imageController');
-const upload = require('../utils/multerConfig'); 
+const authMiddleware = require('../middlewares/authMiddleware');
+const upload = require('../utils/multerConfig');
 
-// Get all images
-router.get('/', imageController.getAllImages);
+
+
+// Get all images for authenticated user
+router.get('/', authMiddleware, imageController.getAllImages);
 
 // Get image by ID
 router.get('/:id', imageController.getImageById);
 
 // Upload image
-router.post('/upload', upload.single('image'), imageController.uploadImage);
+router.post('/upload', authMiddleware, upload.single('image'), imageController.uploadImage);
 
 // Like image
-router.put('/:id/like', imageController.likeImage);
+router.put('/:id/like', authMiddleware, imageController.likeImage);
 
 // Comment on image
-router.post('/:id/comment', imageController.commentOnImage);
+router.post('/:id/comment', authMiddleware, imageController.commentOnImage);
 
 // Filter images by date
 router.get('/filter/date', imageController.filterImagesByDate);

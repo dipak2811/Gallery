@@ -5,19 +5,22 @@ import {
   faCloudArrowUp,
   faFolderPlus,
 } from "@fortawesome/free-solid-svg-icons";
+import { faCircleUser } from "@fortawesome/free-regular-svg-icons";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { uploadImage } from "../services/api";
 import { createAlbum } from "../services/api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Dropdown } from "react-bootstrap";
 
 function Navbar() {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [image, setImage] = useState(null);
   const [title, setTitle] = useState("");
+  const User = JSON.parse(localStorage.getItem("user"));
   const [albumData, setAlbumData] = useState({
     title: "",
     // Add more fields as needed for the album form
@@ -91,135 +94,163 @@ function Navbar() {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.location.href = "/login";
+  };
+
   const navigateHome = () => {
     navigate("/");
   };
-
+  const urlDetails = useLocation();
+  let showNav = false;
+  if (
+    urlDetails.pathname.includes("/login") ||
+    urlDetails.pathname.includes("/register")
+  )
+    showNav = true;
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light">
-      <div className="container">
-        <span className="navbar-brand" role="button" onClick={navigateHome}>
-          <FontAwesomeIcon icon={faImages} /> Gallery
-        </span>
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
-        <div
-          className="collapse navbar-collapse  justify-content-end"
-          id="navbarNav"
-        >
-          <ul className="navbar-nav">
-            <li className="nav-item">
-              <div
-                className="nav-link active"
-                role="button"
-                onClick={handleUploadClick}
-              >
-                Upload <FontAwesomeIcon icon={faCloudArrowUp} />
-              </div>
-            </li>
-            <li className="nav-item">
-              <div
-                className="nav-link"
-                role="button"
-                onClick={handleCreateClick}
-              >
-                Create <FontAwesomeIcon icon={faFolderPlus} />
-              </div>
-            </li>
-            <li className="nav-item">
-              <div className="nav-link" role="button">
-                User
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      {/* Upload Modal */}
-      <Modal show={showUploadModal} onHide={handleCloseModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Upload Image</Modal.Title>
-        </Modal.Header>
-
-        <Modal.Body>
-          <div className="card">
-            <div className="card-body">
-              <div>
-                <label className="mb-3 fw-bold">Enter Image Name</label>
-                <input
-                  type="input"
-                  className="form-control mb-3"
-                  onChange={handleTitleChange}
-                  placeholder="Image Title"
-                />
-              </div>
-              <div>
-                <label className="mb-3 fw-bold">Upload Image</label>
-                <input
-                  type="file"
-                  className="form-control mb-3"
-                  onChange={handleFileChange}
-                />
-              </div>
+    <>
+      {!showNav ? (
+        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+          <div className="container">
+            <span className="navbar-brand" role="button" onClick={navigateHome}>
+              <FontAwesomeIcon icon={faImages} /> Gallery
+            </span>
+            <button
+              className="navbar-toggler"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#navbarNav"
+              aria-controls="navbarNav"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <span className="navbar-toggler-icon"></span>
+            </button>
+            <div
+              className="collapse navbar-collapse  justify-content-end"
+              id="navbarNav"
+            >
+              <ul className="navbar-nav">
+                <li className="nav-item">
+                  <div
+                    className="nav-link active"
+                    role="button"
+                    onClick={handleUploadClick}
+                  >
+                    Upload <FontAwesomeIcon icon={faCloudArrowUp} />
+                  </div>
+                </li>
+                <li className="nav-item">
+                  <div
+                    className="nav-link"
+                    role="button"
+                    onClick={handleCreateClick}
+                  >
+                    Create <FontAwesomeIcon icon={faFolderPlus} />
+                  </div>
+                </li>
+                <li className="nav-item">
+                  {/* <div className="nav-link" role="button"> */}
+                    
+                  <Dropdown>
+                    <Dropdown.Toggle
+                      variant="light"
+                      id="dropdown-basic"
+                    >
+                      {User.userName}{" "}
+                      <FontAwesomeIcon icon={faCircleUser} className="fa-lg" />
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      <Dropdown.Item role="button" onClick={handleLogout}>Logout</Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                  {/* </div> */}
+                </li>
+              </ul>
             </div>
           </div>
-        </Modal.Body>
 
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleUpload}>
-            Upload
-          </Button>
-        </Modal.Footer>
-      </Modal>
+          {/* Upload Modal */}
+          <Modal show={showUploadModal} onHide={handleCloseModal}>
+            <Modal.Header closeButton>
+              <Modal.Title>Upload Image</Modal.Title>
+            </Modal.Header>
 
-      {/* Create Modal */}
-      <Modal show={showCreateModal} onHide={handleCloseModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Create Album</Modal.Title>
-        </Modal.Header>
-
-        <Modal.Body>
-          <div className="card">
-            <div className="card-body">
-              <div>
-                <label className="mb-3 fw-bold">Enter Album Name</label>
-                <input
-                  type="text"
-                  className="form-control mb-3"
-                  name="title"
-                  placeholder="Album Title"
-                  value={albumData.title}
-                  onChange={handleAlbumChange}
-                />
-                {/* Add other form fields for the album data */}
+            <Modal.Body>
+              <div className="card">
+                <div className="card-body">
+                  <div>
+                    <label className="mb-3 fw-bold">Enter Image Name</label>
+                    <input
+                      type="input"
+                      className="form-control mb-3"
+                      onChange={handleTitleChange}
+                      placeholder="Image Title"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-3 fw-bold">Upload Image</label>
+                    <input
+                      type="file"
+                      className="form-control mb-3"
+                      onChange={handleFileChange}
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </Modal.Body>
+            </Modal.Body>
 
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleAlbumSubmit}>
-            Create
-          </Button>
-        </Modal.Footer>
-      </Modal>
-      <ToastContainer />
-    </nav>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleCloseModal}>
+                Close
+              </Button>
+              <Button variant="primary" onClick={handleUpload}>
+                Upload
+              </Button>
+            </Modal.Footer>
+          </Modal>
+
+          {/* Create Modal */}
+          <Modal show={showCreateModal} onHide={handleCloseModal}>
+            <Modal.Header closeButton>
+              <Modal.Title>Create Album</Modal.Title>
+            </Modal.Header>
+
+            <Modal.Body>
+              <div className="card">
+                <div className="card-body">
+                  <div>
+                    <label className="mb-3 fw-bold">Enter Album Name</label>
+                    <input
+                      type="text"
+                      className="form-control mb-3"
+                      name="title"
+                      placeholder="Album Title"
+                      value={albumData.title}
+                      onChange={handleAlbumChange}
+                    />
+                    {/* Add other form fields for the album data */}
+                  </div>
+                </div>
+              </div>
+            </Modal.Body>
+
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleCloseModal}>
+                Close
+              </Button>
+              <Button variant="primary" onClick={handleAlbumSubmit}>
+                Create
+              </Button>
+            </Modal.Footer>
+          </Modal>
+          <ToastContainer />
+        </nav>
+      ) : null}
+    </>
   );
 }
 

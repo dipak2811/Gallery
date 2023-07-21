@@ -87,16 +87,18 @@ const ImageCard = ({ image }) => {
 
   const handleDownload = async () => {
     try {
-      const corsProxyUrl = "https://cors-anywhere.herokuapp.com/";
-      const imageUrl = `${corsProxyUrl}${image.imageUrl}`;
-      const response = await fetch(imageUrl);
+        const response = await fetch(image.imageUrl);
+      console.log(response);
       const blob = await response.blob();
+
       const downloadUrl = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = downloadUrl;
-      link.download = image.title;
-      link.target = "_blank";
-      link.click();
+      link.download = image.title; // Set the image title as the file name
+      link.target = "_blank"; // Open in a new tab, so it won't redirect the current page
+
+      link.click(); // Simulate a click on the download link
+
       URL.revokeObjectURL(downloadUrl);
     } catch (error) {
       toast.error("Failed to download image", {
@@ -106,7 +108,6 @@ const ImageCard = ({ image }) => {
       });
     }
   };
-  
 
   return (
     <div className="card">

@@ -1,9 +1,15 @@
 import axios from "axios";
-const token = localStorage.getItem("token");
-const User = JSON.parse(localStorage.getItem("user"));
+import { getCookie } from "react-use-cookie";
+
+
+const token = getCookie('token');
+const userCookie = getCookie("user");
+let User;
+if (userCookie) {
+  User = JSON.parse(userCookie);
+}
 const UserId = User?.id;
 
-console.log(token);
 const BASE_URL = "http://localhost:5000"; 
 
 const api = axios.create({

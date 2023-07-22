@@ -1,8 +1,9 @@
+import { getCookie } from "react-use-cookie";
 import React from "react";
 import { Navigate } from "react-router-dom";
 
 const AuthPrivateRoute = ({ children }) => {
-  const token = localStorage.getItem("token");
+  const token = getCookie("token");
   return <>{!token ? <>{children}</> : <Navigate to="/" />}</>;
 };
 

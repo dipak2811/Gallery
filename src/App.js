@@ -7,10 +7,10 @@ import "react-toastify/dist/ReactToastify.css";
 import Home from "./components/Home";
 import AlbumPicture from "./components/AlbumPictures";
 import Navbar from "./components/Navbar";
-import AuthPrivateRoute from "./Auth/AuthPrivateRoute";
-import Login from "./Auth/Login";
-import Register from "./Auth/Register";
-import PrivateRoute from "./Auth/PrivateRoute";
+import AuthPrivateRoute from "./auth/AuthPrivateRoute";
+import Login from "./auth/login/Login.js";
+import Register from "./auth/register/Register.js";
+import PrivateRoute from "./auth/PrivateRoute";
 
 const App = () => {
   return (

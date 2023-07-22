@@ -64,7 +64,7 @@ const ImageCard = ({ image }) => {
 
   const handleLike = async () => {
     try {
-      const response = await addImageLike(image._id);
+      await addImageLike(image._id);
     } catch (error) {
       toast.error("Failed to like image", {
         position: "bottom-right",
@@ -81,7 +81,7 @@ const ImageCard = ({ image }) => {
 
   const handleAddComment = async () => {
     try {
-      const response = await addCommentToImage(image._id, { comment });
+      await addCommentToImage(image._id, { comment });
       setComment("");
     } catch (error) {
       toast.error("Failed to add comment", {

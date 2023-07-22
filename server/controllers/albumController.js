@@ -1,7 +1,6 @@
 const Album = require("../models/Album");
 const Image = require("../models/Image");
 
-// Get all albums for a specific user with user information populated
 exports.getAllAlbums = async (req, res) => {
   const { userId } = req.params;
   try {
@@ -12,7 +11,6 @@ exports.getAllAlbums = async (req, res) => {
   }
 };
 
-// Get album by ID with images populated
 exports.getAlbumById = async (req, res) => {
   const { id } = req.params;
   try {
@@ -26,7 +24,6 @@ exports.getAlbumById = async (req, res) => {
   }
 };
 
-// Create a new album for a specific user
 exports.createAlbum = async (req, res) => {
   const { userId } = req.params;
   const { title } = req.body;
@@ -39,7 +36,6 @@ exports.createAlbum = async (req, res) => {
   }
 };
 
-// Add image to album
 exports.addImageToAlbum = async (req, res) => {
   const { albumId, imageId } = req.params;
   try {

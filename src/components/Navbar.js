@@ -14,13 +14,18 @@ import { uploadImage } from "../services/api";
 import { createAlbum } from "../services/api";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Dropdown } from "react-bootstrap";
+import { setCookie, getCookie } from "react-use-cookie";
 
 function Navbar() {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [image, setImage] = useState(null);
   const [title, setTitle] = useState("");
-  const User = JSON.parse(localStorage.getItem("user"));
+  const userCookie = getCookie("user");
+  let User;
+  if (userCookie) {
+    User = JSON.parse(userCookie);
+  }
   const [albumData, setAlbumData] = useState({
     title: "",
     // Add more fields as needed for the album form
@@ -95,9 +100,9 @@ function Navbar() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    window.location.href = "/login";
+    setCookie("token", "", { path: "/", expires: new Date(0) });
+    setCookie("user", "", { path: "/", expires: new Date(0) });
+    navigate("/login");
   };
 
   const navigateHome = () => {
@@ -153,18 +158,15 @@ function Navbar() {
                   </div>
                 </li>
                 <li className="nav-item">
-                  {/* <div className="nav-link" role="button"> */}
-                    
                   <Dropdown>
-                    <Dropdown.Toggle
-                      variant="light"
-                      id="dropdown-basic"
-                    >
-                      {User.userName}{" "}
+                    <Dropdown.Toggle variant="light" id="dropdown-basic">
+                      {User?.userName}{" "}
                       <FontAwesomeIcon icon={faCircleUser} className="fa-lg" />
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
-                      <Dropdown.Item role="button" onClick={handleLogout}>Logout</Dropdown.Item>
+                      <Dropdown.Item role="button" onClick={handleLogout}>
+                        Logout
+                      </Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
                   {/* </div> */}

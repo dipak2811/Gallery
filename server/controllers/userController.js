@@ -1,13 +1,11 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { secretKey } = require('../config'); // Import the secret key from config.js
+const { secretKey } = require('../config');
 
 // User login (authentication)
 exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
-  console.log(email, password);
-
   try {
     const user = await User.findOne({ email });
     if (!user) {
@@ -30,7 +28,6 @@ exports.loginUser = async (req, res) => {
 // Create new user
 exports.createUser = async (req, res) => {
   const { username, password, email } = req.body;
-
   try {
     const existingUser = await User.findOne({ username });
     if (existingUser) {

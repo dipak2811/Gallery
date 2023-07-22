@@ -7,10 +7,9 @@ admin.initializeApp({
 });
 const bucket = admin.storage().bucket();
 
-// Get all images for authenticated user
 exports.getAllImages = async (req, res) => {
   try {
-    const userId = req.user._id; // Fetch the user ID from the authenticated request
+    const userId = req.user._id;
     const images = await Image.find({ userId });
     res.status(200).json(images);
   } catch (error) {
@@ -18,10 +17,9 @@ exports.getAllImages = async (req, res) => {
   }
 };
 
-// Get image by ID for authenticated user
 exports.getImageById = async (req, res) => {
   const { id } = req.params;
-  const userId = req.user._id; // Fetch the user ID from the authenticated request
+  const userId = req.user._id;
   try {
     const image = await Image.findOne({ _id: id, userId });
     if (!image) {
@@ -33,7 +31,6 @@ exports.getImageById = async (req, res) => {
   }
 };
 
-// Upload image for authenticated user
 exports.uploadImage = async (req, res) => {
   try {
     if (!req.file) {
@@ -42,7 +39,7 @@ exports.uploadImage = async (req, res) => {
     const imageUrl = req.file.path;
     const { title } = req.body;
     const filename = req.file.filename;
-    const userId = req.user._id; // Fetch the user ID from the authenticated request
+    const userId = req.user._id;
     await bucket.upload(imageUrl, {
       destination: `images/${filename}`,
     });
@@ -58,10 +55,9 @@ exports.uploadImage = async (req, res) => {
   }
 };
 
-// Like image for authenticated user
 exports.likeImage = async (req, res) => {
   const { id } = req.params;
-  const userId = req.user._id; // Fetch the user ID from the authenticated request
+  const userId = req.user._id;
   try {
     const image = await Image.findOne({ _id: id, userId });
     if (!image) {
@@ -71,15 +67,15 @@ exports.likeImage = async (req, res) => {
     await image.save();
     res.status(200).json(image);
   } catch (error) {
+    console.error("Error liking image:", error);
     res.status(500).json({ error: "Failed to like image" });
   }
 };
 
-// Comment on image for authenticated user
 exports.commentOnImage = async (req, res) => {
   const { id } = req.params;
   const { comment } = req.body;
-  const userId = req.user._id; // Fetch the user ID from the authenticated request
+  const userId = req.user._id;
   try {
     const image = await Image.findOne({ _id: id, userId });
     if (!image) {
@@ -93,12 +89,9 @@ exports.commentOnImage = async (req, res) => {
   }
 };
 
-// ... (previous code)
-
-// Filter images by date for authenticated user
 exports.filterImagesByDate = async (req, res) => {
   try {
-    const userId = req.user._id; // Fetch the user ID from the authenticated request
+    const userId = req.user._id;  
     const images = await Image.find({ userId }).sort({ date: -1 });
     res.status(200).json(images);
   } catch (error) {
@@ -106,10 +99,9 @@ exports.filterImagesByDate = async (req, res) => {
   }
 };
 
-// Filter images by tag for authenticated user
 exports.filterImagesByTag = async (req, res) => {
   const { tag } = req.params;
-  const userId = req.user._id; // Fetch the user ID from the authenticated request
+  const userId = req.user._id;
   try {
     const images = await Image.find({ tags: tag, userId });
     res.status(200).json(images);
@@ -118,9 +110,8 @@ exports.filterImagesByTag = async (req, res) => {
   }
 };
 
-// Share image on social media (Not implemented in this example, but you can add it as needed)
 exports.shareImage = async (req, res) => {
-  // Implement share image logic here
+
 };
 
 module.exports = exports;

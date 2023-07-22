@@ -1,8 +1,9 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
+import { getCookie } from "react-use-cookie";
 
 const PrivateRoute = ({ children }) => {
-  const token = localStorage.getItem("token");
+  const token = getCookie('token');
   return <>{token ? <>{children}</> : <Navigate to="/login" />}</>;
 };
 

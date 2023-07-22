@@ -14,6 +14,7 @@ const AlbumPicture = () => {
   const fetchImagesInAlbum = async () => {
     try {
       const albumData = await getImagesInAlbum(albumId);
+      console.log("albumData",albumData);
       setImages(albumData.images);
     } catch (error) {
       toast.error("Failed to fetch images in the album", {

@@ -118,7 +118,7 @@ function Navbar() {
   return (
     <>
       {!showNav ? (
-        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+        <nav className="navbar navbar-expand-lg navbar-light bg-light sticky-top">
           <div className="container">
             <span className="navbar-brand" role="button" onClick={navigateHome}>
               <FontAwesomeIcon icon={faImages} /> Gallery
@@ -157,9 +157,9 @@ function Navbar() {
                     Create <FontAwesomeIcon icon={faFolderPlus} />
                   </div>
                 </li>
-                <li className="nav-item">
+                <li className="nav-item d-flex align-items-center">
                   <Dropdown>
-                    <Dropdown.Toggle variant="light" id="dropdown-basic">
+                    <Dropdown.Toggle variant="" id="dropdown-basic" className="border-0">
                       {User?.userName}{" "}
                       <FontAwesomeIcon icon={faCircleUser} className="fa-lg" />
                     </Dropdown.Toggle>

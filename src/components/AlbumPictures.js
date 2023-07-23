@@ -11,7 +11,6 @@ const AlbumPicture = () => {
     fetchImagesInAlbum();
   }, [albumId]);
 
-
   const fetchImagesInAlbum = async () => {
     try {
       const albumData = await getImagesInAlbum(albumId);

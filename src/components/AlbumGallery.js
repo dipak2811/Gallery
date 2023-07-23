@@ -1,22 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AlbumCard from "./AlbumCard";
-import { ToastContainer, toast } from "react-toastify";
 import { useSelector } from "react-redux";
-
 
 const AlbumGallery = () => {
   const [albums, setAlbums] = useState([]);
   const navigate = useNavigate();
-  const store = useSelector((state)=>state.AlbumStore);
+  const store = useSelector((state) => state.AlbumStore);
 
-
-  useEffect(() => {
-  }, []);
   useEffect(() => {
     setAlbums(store.albums);
   }, [store]);
- 
 
   return (
     <div>
@@ -31,11 +24,14 @@ const AlbumGallery = () => {
               navigate(`/albums/${album._id}`);
             }}
           >
-            <AlbumCard album={album} />
+            <div className="card">
+              <div className="card-body">
+                <h5 className="card-title">{album.title}</h5>
+              </div>
+            </div>
           </div>
         ))}
       </div>
-      <ToastContainer />
     </div>
   );
 };

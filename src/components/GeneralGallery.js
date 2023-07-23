@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import ImageCard from "./ImageCard";
 import { ToastContainer, toast } from "react-toastify";
 
-const GeneralGallery = ({imageProps}) => {
+const GeneralGallery = ({ imageProps }) => {
   const [images, setImages] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [filteredImage, setFilteredImage] = useState([]);
@@ -108,7 +108,7 @@ const GeneralGallery = ({imageProps}) => {
         {(searchKeyword || filteredImage.length > 0) && (
           <button
             className="btn btn-primary mt-2"
-            style={{maxWidth:"130px",marginLeft:"12px"}}
+            style={{ maxWidth: "130px", marginLeft: "12px" }}
             onClick={handleClearSearch}
           >
             Clear Search

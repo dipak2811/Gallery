@@ -176,7 +176,7 @@ function Navbar() {
                       <FontAwesomeIcon icon={faCircleUser} className="fa-lg" />
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
-                      <Dropdown.Item role="button" style={{color:"red"}} onClick={handleLogout}>
+                      <Dropdown.Item role="button" style={{color:"red",backgroundColor:"white"}} onClick={handleLogout}>
                         Logout
                       </Dropdown.Item>
                     </Dropdown.Menu>

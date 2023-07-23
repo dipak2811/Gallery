@@ -1,8 +1,7 @@
 import axios from "axios";
 import { getCookie } from "react-use-cookie";
 
-
-const token = getCookie('token');
+const token = getCookie("token");
 const userCookie = getCookie("user");
 let User;
 if (userCookie) {
@@ -10,19 +9,20 @@ if (userCookie) {
 }
 const UserId = User?.id;
 
-const BASE_URL = "http://localhost:5000"; 
+const BASE_URL = "http://localhost:5000";
 
 const api = axios.create({
   baseURL: BASE_URL,
 });
-api.defaults.headers.common['Authorization'] = `${token}`;
-api.defaults.headers.post['Content-Type'] = 'application/json';
+api.defaults.headers.common["Authorization"] = `${token}`;
+api.defaults.headers.post["Content-Type"] = "application/json";
 export const uploadImage = async (formData) => {
   try {
     const response = await api.post("/images/upload", formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
-      }});
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return response.data;
   } catch (error) {
     throw new Error("Failed to upload image");
@@ -85,7 +85,7 @@ export const addImageLike = async (imageId) => {
 
 export const addCommentToImage = async (imageId, comment) => {
   try {
-    const response = await api.post(`/images/${imageId}/comment`,comment);
+    const response = await api.post(`/images/${imageId}/comment`, comment);
     return response.data;
   } catch (error) {
     throw new Error("Failed to add image to album");
@@ -94,7 +94,7 @@ export const addCommentToImage = async (imageId, comment) => {
 
 export const loginUser = async (user) => {
   try {
-    const response = await api.post(`/users/login`,user);
+    const response = await api.post(`/users/login`, user);
     return response.data;
   } catch (error) {
     throw new Error("Failed to login");
@@ -103,10 +103,9 @@ export const loginUser = async (user) => {
 
 export const registerUser = async (user) => {
   try {
-    const response = await api.post(`/users/register`,user);
+    const response = await api.post(`/users/register`, user);
     return response.data;
   } catch (error) {
     throw new Error("Failed to register");
   }
 };
-// Add more API calls as needed for filtering, searching, etc.

@@ -89,29 +89,4 @@ exports.commentOnImage = async (req, res) => {
   }
 };
 
-exports.filterImagesByDate = async (req, res) => {
-  try {
-    const userId = req.user._id;  
-    const images = await Image.find({ userId }).sort({ date: -1 });
-    res.status(200).json(images);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to filter images by date" });
-  }
-};
-
-exports.filterImagesByTag = async (req, res) => {
-  const { tag } = req.params;
-  const userId = req.user._id;
-  try {
-    const images = await Image.find({ tags: tag, userId });
-    res.status(200).json(images);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to filter images by tag" });
-  }
-};
-
-exports.shareImage = async (req, res) => {
-
-};
-
 module.exports = exports;

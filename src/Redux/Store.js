@@ -1,12 +1,12 @@
-import { configureStore } from '@reduxjs/toolkit';
-import { combineReducers } from 'redux';
-import ImageReducerSlice from './Slices/ImageReducerSlice';
-import AlbumReducerSlice from './Slices/AlbumReducerSlice';
-import { persistReducer, persistStore } from 'redux-persist';
-import storage from 'redux-persist/lib/storage/session';
+import { configureStore } from "@reduxjs/toolkit";
+import { combineReducers } from "redux";
+import ImageReducerSlice from "./Slices/ImageReducerSlice";
+import AlbumReducerSlice from "./Slices/AlbumReducerSlice";
+import { persistReducer, persistStore } from "redux-persist";
+import storage from "redux-persist/lib/storage/session";
 
 const persistConfig = {
-  key: 'root',
+  key: "root",
   storage,
 };
 

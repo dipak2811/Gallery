@@ -10,7 +10,6 @@ const ImageGallery = () => {
     setImages(store.images);
   }, [store]);
 
-
   return (
     <div>
       <h2 className="mb-4">Image Gallery</h2>

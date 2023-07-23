@@ -1,33 +1,26 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const imageController = require('../controllers/imageController');
-const authMiddleware = require('../middlewares/authMiddleware');
-const upload = require('../utils/multerConfig');
+const imageController = require("../controllers/imageController");
+const authMiddleware = require("../middlewares/authMiddleware");
+const upload = require("../utils/multerConfig");
 
+router.get("/", authMiddleware, imageController.getAllImages);
 
+router.get("/:id", imageController.getImageById);
 
-// Get all images for authenticated user
-router.get('/', authMiddleware, imageController.getAllImages);
+router.post(
+  "/upload",
+  authMiddleware,
+  upload.single("image"),
+  imageController.uploadImage
+);
 
-// Get image by ID
-router.get('/:id', imageController.getImageById);
+router.put("/:id/like", authMiddleware, imageController.likeImage);
 
-// Upload image
-router.post('/upload', authMiddleware, upload.single('image'), imageController.uploadImage);
+router.post("/:id/comment", authMiddleware, imageController.commentOnImage);
 
-// Like image
-router.put('/:id/like', authMiddleware, imageController.likeImage);
+router.get("/filter/tag/:tag", imageController.filterImagesByTag);
 
-// Comment on image
-router.post('/:id/comment', authMiddleware, imageController.commentOnImage);
-
-// Filter images by date
-router.get('/filter/date', imageController.filterImagesByDate);
-
-// Filter images by tag
-router.get('/filter/tag/:tag', imageController.filterImagesByTag);
-
-// Share image on social media (implement as needed)
-router.post('/:id/share', imageController.shareImage);
+router.post("/:id/share", imageController.shareImage);
 
 module.exports = router;

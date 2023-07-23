@@ -12,7 +12,7 @@ export const AlbumReducerSlice = createSlice({
       state.albums = action.payload;
     },
     addAlbum: (state, action) => {
-      state.albums = [...state.albums,action.payload];
+      state.albums = [...state.albums, action.payload];
     },
   },
 });

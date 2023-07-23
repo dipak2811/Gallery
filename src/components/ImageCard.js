@@ -41,10 +41,10 @@ const ImageCard = ({ image }) => {
       if (img?._id !== image?._id) {
         return img;
       }
-      return {...image,like:like};
+      return {...image,like:like,comments:comments};
     });
     dispatch(addImage([...filteredTOAdd]));
-  }, [like]);
+  }, [like,comments]);
 
   const handleAlbumChange = (e) => {
     setSelectedAlbum(e.target.value);

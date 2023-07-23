@@ -37,7 +37,7 @@ const App = () => {
           path="Register"
           element={
             <AuthPrivateRoute>
-              <Register  />
+              <Register />
             </AuthPrivateRoute>
           }
         />

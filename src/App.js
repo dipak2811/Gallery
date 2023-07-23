@@ -1,25 +1,57 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { Route, Routes } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import "react-toastify/dist/ReactToastify.css";
 
-function App() {
+import Home from "./components/Home";
+import AlbumPicture from "./components/AlbumPictures";
+import Navbar from "./components/Navbar";
+import AuthPrivateRoute from "./Auth/AuthPrivateRoute";
+import Login from "./Auth/login/Login.js";
+import Register from "./Auth/register/Register.js";
+import PrivateRoute from "./Auth/PrivateRoute";
+
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Navbar />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <PrivateRoute>
+              <Home />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="login"
+          element={
+            <AuthPrivateRoute>
+              <Login />
+            </AuthPrivateRoute>
+          }
+        />
+        <Route
+          path="Register"
+          element={
+            <AuthPrivateRoute>
+              <Register />
+            </AuthPrivateRoute>
+          }
+        />
+        <Route
+          path="albums/:albumId"
+          element={
+            <PrivateRoute>
+              <AlbumPicture />
+            </PrivateRoute>
+          }
+        />
+      </Routes>
+    </>
   );
-}
+};
 
 export default App;

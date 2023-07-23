@@ -1,30 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAlbums } from "../services/api";
 import AlbumCard from "./AlbumCard";
 import { ToastContainer, toast } from "react-toastify";
+import { useSelector } from "react-redux";
 
 
 const AlbumGallery = () => {
   const [albums, setAlbums] = useState([]);
   const navigate = useNavigate();
+  const store = useSelector((state)=>state.AlbumStore);
+
 
   useEffect(() => {
-    fetchAlbums();
   }, []);
-
-  const fetchAlbums = async () => {
-    try {
-      const albumsData = await getAlbums();
-      setAlbums(albumsData);
-    } catch (error) {
-      toast.error("Failed to fetch albums", {
-        position: "bottom-right",
-        autoClose: 3000,
-        hideProgressBar: true,
-      });
-    }
-  };
+  useEffect(() => {
+    setAlbums(store.albums);
+  }, [store]);
+ 
 
   return (
     <div>

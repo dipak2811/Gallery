@@ -1,18 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
-import { loginUser } from "../../services/api";
+import { getAlbums, loginUser } from "../../services/api";
 import { useNavigate } from "react-router-dom";
 import { setCookie } from "react-use-cookie";
 import Register from "../register/Register";
-import "./Login.css"; 
+import "./Login.css";
+import { getImages } from "../../services/api";
+import { useDispatch } from "react-redux";
+import { addImage } from "../../Redux/Slices/ImageReducerSlice";
+import { addAllAlbums } from "../../Redux/Slices/AlbumReducerSlice";
 
 const Login = () => {
-  const [showPassword, setShowPassowrd] = useState(false);
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const dispatch = useDispatch();
+
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
     validateEmail(event.target.value);
@@ -44,6 +49,31 @@ const Login = () => {
     }
   };
 
+  const fetchImages = async () => {
+    try {
+      const imagesData = await getImages();
+      dispatch(addImage(imagesData));
+    } catch (error) {
+      toast.error("Failed to fetch images", {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
+    }
+  };
+
+  const fetchAlbums = async () => {
+    try {
+      const response = await getAlbums();
+      dispatch(addAllAlbums(response));
+    } catch (error) {
+      toast.error("Failed to fetch albums", {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
+    }
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -54,7 +84,13 @@ const Login = () => {
       };
       setCookie("token", response.token, { path: "/" });
       setCookie("user", JSON.stringify(userDetails), { path: "/" });
-      setTimeout(()=>{navigate("/");},2000)
+      setTimeout(() => {
+        (async () => {
+          await fetchAlbums();
+          await fetchImages();
+          navigate("/");
+        })();
+      }, 1000);
       toast.success("Successfully loggedIn", {
         position: "bottom-right",
         autoClose: 3000,

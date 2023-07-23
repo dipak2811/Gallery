@@ -1,40 +1,50 @@
 import React, { useState, useEffect } from "react";
-import { addImageToAlbum, getAlbums, addImageLike, addCommentToImage } from "../services/api";
+import {
+  addImageToAlbum,
+  addImageLike,
+  addCommentToImage,
+} from "../services/api";
 import { ToastContainer, toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart, faCloudArrowDown, faFolderPlus } from "@fortawesome/free-solid-svg-icons";
-import { faHeart as farHeart, faComment } from "@fortawesome/free-regular-svg-icons";
+import {
+  faHeart,
+  faCloudArrowDown,
+  faFolderPlus,
+} from "@fortawesome/free-solid-svg-icons";
+import {
+  faHeart as farHeart,
+  faComment,
+} from "@fortawesome/free-regular-svg-icons";
 import "react-toastify/dist/ReactToastify.css";
-import { Modal, Button, Form } from "react-bootstrap";
+import { Modal, Button } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import { addImage } from "../Redux/Slices/ImageReducerSlice";
 
 const ImageCard = ({ image }) => {
   const [selectedAlbum, setSelectedAlbum] = useState("");
-  const [albums, setAlbums] = useState([]);
   const [comment, setComment] = useState("");
-  const [comments,setComments] = useState([]);
+  const [comments, setComments] = useState([]);
   const [showCommentModal, setShowCommentModal] = useState(false);
-  const [tags, setTags] = useState([]);
   const [showAlbumModal, setShowAlbumModal] = useState(false);
-  const [like,setLike] = useState(false);
+  const [like, setLike] = useState(false);
+  const store = useSelector((state) => state.ImageStore);
+  const albumStoreData = useSelector(state => state.AlbumStore);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    fetchAlbums();
     setLike(image.like);
     setComments(image.comments);
   }, []);
 
-  const fetchAlbums = async () => {
-    try {
-      const albumsData = await getAlbums();
-      setAlbums(albumsData);
-    } catch (error) {
-      toast.error("Failed to fetch albums", {
-        position: "bottom-right",
-        autoClose: 3000,
-        hideProgressBar: true,
-      });
-    }
-  };
+  useEffect(() => {
+    let filteredTOAdd = store.images.map((img) => {
+      if (img?._id !== image?._id) {
+        return img;
+      }
+      return {...image,like:like};
+    });
+    dispatch(addImage([...filteredTOAdd]));
+  }, [like]);
 
   const handleAlbumChange = (e) => {
     setSelectedAlbum(e.target.value);
@@ -65,13 +75,12 @@ const ImageCard = ({ image }) => {
       });
     }
     setShowAlbumModal(false);
-
   };
 
   const handleLike = async () => {
     try {
       await addImageLike(image._id);
-      setLike((like)=>!like);
+      setLike((like) => !like);
     } catch (error) {
       toast.error("Failed to like image", {
         position: "bottom-right",
@@ -80,7 +89,6 @@ const ImageCard = ({ image }) => {
       });
     }
   };
-
 
   const handleCommentChange = (e) => {
     setComment(e.target.value);
@@ -99,18 +107,6 @@ const ImageCard = ({ image }) => {
       });
     }
     setShowCommentModal(false);
-  };
-
-  const handleTagChange = (e) => {
-    // Placeholder function for handling tag input change
-    const value = e.target.value;
-    const tagsArray = value.split(",").map((tag) => tag.trim());
-    setTags(tagsArray);
-  };
-
-  const handleAddTags = () => {
-    // Placeholder function for adding tags
-    console.log("Tags:", tags);
   };
 
   const handleDownload = async () => {
@@ -137,12 +133,13 @@ const ImageCard = ({ image }) => {
 
   return (
     <>
-      <div className="card" style={{ height: '270px' }}>
-        <div className="d-flex align-items-center" style={{ height: '150px'}} >
+      <div className="card" style={{ height: "270px" }}>
+        <div className="d-flex align-items-center" style={{ height: "150px" }}>
           <img
-            src={image.imageUrl} alt={image.title}
+            src={image.imageUrl}
+            alt={image.title}
             className="card-img-top"
-            style={{  objectFit: 'contain', height: '100%' }}
+            style={{ objectFit: "contain", height: "100%" }}
           />
         </div>
         <div className="card-body h-25">
@@ -159,18 +156,27 @@ const ImageCard = ({ image }) => {
                 <FontAwesomeIcon icon={farHeart} className="fa-2x" />
               )}
             </button>
-            <button className="btn border-0 px-2 w-25" onClick={() => setShowCommentModal(true)}>
+            <button
+              className="btn border-0 px-2 w-25"
+              onClick={() => setShowCommentModal(true)}
+            >
               <FontAwesomeIcon icon={faComment} className="fa-2x" />
             </button>
             <button className="btn border-0 px-2 w-25" onClick={handleDownload}>
               <FontAwesomeIcon icon={faCloudArrowDown} className="fa-2x" />
             </button>
-            <button className="btn border-0 px-2 w-25" onClick={() => setShowAlbumModal(true)}>
+            <button
+              className="btn border-0 px-2 w-25"
+              onClick={() => setShowAlbumModal(true)}
+            >
               <FontAwesomeIcon icon={faFolderPlus} className="fa-2x" />
             </button>
           </div>
           <div className="mt-3">
-            <Modal show={showCommentModal} onHide={() => setShowCommentModal(false)}>
+            <Modal
+              show={showCommentModal}
+              onHide={() => setShowCommentModal(false)}
+            >
               <Modal.Header closeButton>
                 <Modal.Title>Comments</Modal.Title>
               </Modal.Header>
@@ -191,23 +197,15 @@ const ImageCard = ({ image }) => {
                 <Button variant="primary" onClick={handleAddComment}>
                   Add Comment
                 </Button>
-                <Button variant="secondary" onClick={() => setShowCommentModal(false)}>
+                <Button
+                  variant="secondary"
+                  onClick={() => setShowCommentModal(false)}
+                >
                   Close
                 </Button>
               </Modal.Footer>
             </Modal>
           </div>
-          {/* <div className="mt-3">
-           <input
-             type="text"
-             value={tags.join(", ")}
-             onChange={handleTagChange}
-             placeholder="Enter tags (comma-separated)..."
-           />
-           <button className="btn btn-primary" onClick={handleAddTags}>
-             Add Tags
-           </button>
-         </div> */}
         </div>
         <ToastContainer />
         <Modal show={showAlbumModal} onHide={() => setShowAlbumModal(false)}>
@@ -222,7 +220,7 @@ const ImageCard = ({ image }) => {
                 onChange={handleAlbumChange}
               >
                 <option value="">Select Album</option>
-                {albums.map((album) => (
+                {albumStoreData.albums?.map((album) => (
                   <option key={album._id} value={album._id}>
                     {album.title}
                   </option>
@@ -234,112 +232,16 @@ const ImageCard = ({ image }) => {
             <Button variant="primary" onClick={handleAddToAlbum}>
               Add to Album
             </Button>
-            <Button variant="secondary" onClick={() => setShowAlbumModal(false)}>
+            <Button
+              variant="secondary"
+              onClick={() => setShowAlbumModal(false)}
+            >
               Close
             </Button>
           </Modal.Footer>
         </Modal>
       </div>
     </>
-
-
-    // <div className="card">
-    //   <img className="card-img-top" src={image.imageUrl} alt={image.title} />
-    //   <div className="card-body">
-    //     <h5 className="card-title">{image.title}</h5>
-    //     <div className="mt-3">
-    //       <button className="btn border-0 px-2" onClick={handleLike}>
-    //         {image.like ? (
-    //           <FontAwesomeIcon
-    //             icon={faHeart}
-    //             className="fa-2x"
-    //             style={{ color: "red" }}
-    //           />
-    //         ) : (
-    //           <FontAwesomeIcon icon={farHeart} className="fa-2x" />
-    //         )}
-    //       </button>
-    //       <button className="btn border-0 px-2" onClick={() => setShowCommentModal(true)}>
-    //         <FontAwesomeIcon icon={faComment} className="fa-2x" />
-    //       </button>
-    //       <button className="btn border-0 px-2" onClick={handleDownload}>
-    //         <FontAwesomeIcon icon={faCloudArrowDown} className="fa-2x" />
-    //       </button>
-    //       <button className="btn border-0 px-2" onClick={() => setShowAlbumModal(true)}>
-    //         <FontAwesomeIcon icon={faFolderPlus} className="fa-2x" />
-    //       </button>
-    //     </div>
-    //     <div className="mt-3">
-    //       <Modal show={showCommentModal} onHide={() => setShowCommentModal(false)}>
-    //         <Modal.Header closeButton>
-    //           <Modal.Title>Comments</Modal.Title>
-    //         </Modal.Header>
-    //         <Modal.Body>
-    //           <ul>
-    //             {image.comments.map((comment, index) => (
-    //               <li key={index}>{comment}</li>
-    //             ))}
-    //           </ul>
-    //           <input
-    //             type="text"
-    //             value={comment}
-    //             onChange={handleCommentChange}
-    //             placeholder="Enter your comment..."
-    //           />
-    //         </Modal.Body>
-    //         <Modal.Footer>
-    //           <Button variant="primary" onClick={handleAddComment}>
-    //             Add Comment
-    //           </Button>
-    //           <Button variant="secondary" onClick={() => setShowCommentModal(false)}>
-    //             Close
-    //           </Button>
-    //         </Modal.Footer>
-    //       </Modal>
-    //     </div>
-    //     {/* <div className="mt-3">
-    //       <input
-    //         type="text"
-    //         value={tags.join(", ")}
-    //         onChange={handleTagChange}
-    //         placeholder="Enter tags (comma-separated)..."
-    //       />
-    //       <button className="btn btn-primary" onClick={handleAddTags}>
-    //         Add Tags
-    //       </button>
-    //     </div> */}
-    //   </div>
-    //   <ToastContainer />
-    //   <Modal show={showAlbumModal} onHide={() => setShowAlbumModal(false)}>
-    //     <Modal.Header closeButton>
-    //       <Modal.Title>Add to Album</Modal.Title>
-    //     </Modal.Header>
-    //     <Modal.Body>
-    //       <div className="form-group">
-    //         <select
-    //           className="form-control"
-    //           value={selectedAlbum}
-    //           onChange={handleAlbumChange}
-    //         >
-    //           <option value="">Select Album</option>
-    //           {albums.map((album) => (
-    //             <option key={album._id} value={album._id}>
-    //               {album.title}
-    //             </option>
-    //           ))}
-    //         </select>
-    //       </div>
-    //     </Modal.Body>
-    //     <Modal.Footer>
-    //       <Button variant="primary" onClick={handleAddToAlbum}>
-    //         Add to Album
-    //       </Button>
-    //       <Button variant="secondary" onClick={() => setShowAlbumModal(false)}>
-    //         Close
-    //       </Button>
-    //     </Modal.Footer>
-    //   </Modal>
-    // </div>
   );
 };
 

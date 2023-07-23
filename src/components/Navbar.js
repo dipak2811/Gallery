@@ -15,20 +15,24 @@ import { createAlbum } from "../services/api";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Dropdown } from "react-bootstrap";
 import { setCookie, getCookie } from "react-use-cookie";
+import { useDispatch, useSelector } from "react-redux";
+import { addImage } from "../Redux/Slices/ImageReducerSlice";
+import { addAlbum } from "../Redux/Slices/AlbumReducerSlice";
 
 function Navbar() {
+  const store = useSelector((state) => state.ImageStore);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [image, setImage] = useState(null);
   const [title, setTitle] = useState("");
   const userCookie = getCookie("user");
+  const dispatch = useDispatch();
   let User;
   if (userCookie) {
     User = JSON.parse(userCookie);
   }
   const [albumData, setAlbumData] = useState({
     title: "",
-    // Add more fields as needed for the album form
   });
   const navigate = useNavigate();
 
@@ -41,6 +45,7 @@ function Navbar() {
   };
 
   const handleCloseModal = () => {
+    setAlbumData({ ...albumData, title: "" });
     setShowUploadModal(false);
     setShowCreateModal(false);
   };
@@ -61,7 +66,8 @@ function Navbar() {
       setTitle("");
       setImage(null);
       handleCloseModal();
-      await uploadImage(formData);
+      const response = await uploadImage(formData);
+      dispatch(addImage([...store.images, response]));
       toast.success("Image uploaded successfully!", {
         position: "bottom-right",
         autoClose: 3000,
@@ -84,7 +90,8 @@ function Navbar() {
   const handleAlbumSubmit = async () => {
     handleCloseModal();
     try {
-      await createAlbum(albumData);
+      const response = await createAlbum(albumData);
+      dispatch(addAlbum(response));
       toast.success("Album created successfully!", {
         position: "bottom-right",
         autoClose: 3000,
@@ -141,7 +148,7 @@ function Navbar() {
               <ul className="navbar-nav">
                 <li className="nav-item">
                   <div
-                    className="nav-link active"
+                    className="nav-link"
                     role="button"
                     onClick={handleUploadClick}
                   >
@@ -159,12 +166,17 @@ function Navbar() {
                 </li>
                 <li className="nav-item d-flex align-items-center">
                   <Dropdown>
-                    <Dropdown.Toggle variant="" id="dropdown-basic" className="border-0">
+                    <Dropdown.Toggle
+                      variant=""
+                      id="dropdown-basic"
+                      style={{paddingLeft:"0px"}}
+                      className="border-0"
+                    >
                       {User?.userName}{" "}
                       <FontAwesomeIcon icon={faCircleUser} className="fa-lg" />
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
-                      <Dropdown.Item role="button" onClick={handleLogout}>
+                      <Dropdown.Item role="button" style={{color:"red"}} onClick={handleLogout}>
                         Logout
                       </Dropdown.Item>
                     </Dropdown.Menu>

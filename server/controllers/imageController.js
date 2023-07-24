@@ -1,3 +1,4 @@
+const fs = require("fs");
 const Image = require("../models/Image");
 const admin = require("firebase-admin");
 const serviceAccount = require("../utils/gallery-app-5a68a-firebase-adminsdk-zsouo-b2729555df.json");
@@ -49,6 +50,7 @@ exports.uploadImage = async (req, res) => {
     });
     const image = new Image({ title, imageUrl: downloadUrl[0], userId });
     await image.save();
+    fs.unlinkSync(imageUrl);
     res.status(201).json(image);
   } catch (error) {
     res.status(500).json({ error: "Failed to upload image" });
@@ -86,6 +88,22 @@ exports.commentOnImage = async (req, res) => {
     res.status(200).json(image);
   } catch (error) {
     res.status(500).json({ error: "Failed to comment on image" });
+  }
+};
+
+exports.deleteImage = async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user._id;
+  try {
+    const image = await Image.findOne({ _id: id, userId });
+    if (!image) {
+      return res.status(404).json({ error: "Image not found" });
+    }
+    await Image.deleteOne({ _id: id, userId });
+    res.status(200).json({ message: "Image deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting image:", error);
+    res.status(500).json({ error: "Failed to delete image" });
   }
 };
 

@@ -19,4 +19,6 @@ router.put("/:id/like", authMiddleware, imageController.likeImage);
 
 router.post("/:id/comment", authMiddleware, imageController.commentOnImage);
 
+router.delete("/:id", authMiddleware, imageController.deleteImage);
+
 module.exports = router;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
-import { getAlbums, loginUser } from "../../services/api";
+import { getAlbums, loginUser, setTokens } from "../../services/api";
 import { useNavigate } from "react-router-dom";
 import { setCookie } from "react-use-cookie";
 import Register from "../register/Register";
@@ -53,6 +53,7 @@ const Login = () => {
     try {
       const imagesData = await getImages();
       dispatch(addImage(imagesData));
+      console.log(imagesData,"imagedata");
     } catch (error) {
       toast.error("Failed to fetch images", {
         position: "bottom-right",
@@ -82,6 +83,7 @@ const Login = () => {
         userName: response?.user?.username,
         id: response?.user?._id,
       };
+      setTokens(response.token,userDetails)
       setCookie("token", response.token, { path: "/" });
       setCookie("user", JSON.stringify(userDetails), { path: "/" });
       setTimeout(() => {

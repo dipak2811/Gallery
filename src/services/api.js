@@ -1,20 +1,16 @@
 import axios from "axios";
-import { getCookie } from "react-use-cookie";
 
-const token = getCookie("token");
-const userCookie = getCookie("user");
-let User;
-if (userCookie) {
-  User = JSON.parse(userCookie);
-}
-const UserId = User?.id;
-
+let UserId;
 const BASE_URL = "http://localhost:5000";
-
 const api = axios.create({
   baseURL: BASE_URL,
 });
-api.defaults.headers.common["Authorization"] = `${token}`;
+
+export const setTokens = (token, user) => {
+  api.defaults.headers.common["Authorization"] = `${token}`;
+  UserId = user?.id;
+  console.log(token, UserId);
+};
 api.defaults.headers.post["Content-Type"] = "application/json";
 export const uploadImage = async (formData) => {
   try {
@@ -88,7 +84,16 @@ export const addCommentToImage = async (imageId, comment) => {
     const response = await api.post(`/images/${imageId}/comment`, comment);
     return response.data;
   } catch (error) {
-    throw new Error("Failed to add image to album");
+    throw new Error("Failed to add comment to image");
+  }
+};
+
+export const deleteImage = async (id) => {
+  try {
+    const response = await api.delete(`images/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to Delete image");
   }
 };
 

@@ -3,6 +3,7 @@ import {
   addImageToAlbum,
   addImageLike,
   addCommentToImage,
+  deleteImage,
 } from "../services/api";
 import { ToastContainer, toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,6 +11,7 @@ import {
   faHeart,
   faCloudArrowDown,
   faFolderPlus,
+  faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   faHeart as farHeart,
@@ -28,7 +30,7 @@ const ImageCard = ({ image }) => {
   const [showAlbumModal, setShowAlbumModal] = useState(false);
   const [like, setLike] = useState(false);
   const store = useSelector((state) => state.ImageStore);
-  const albumStoreData = useSelector(state => state.AlbumStore);
+  const albumStoreData = useSelector((state) => state.AlbumStore);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -41,10 +43,10 @@ const ImageCard = ({ image }) => {
       if (img?._id !== image?._id) {
         return img;
       }
-      return {...image,like:like,comments:comments};
+      return { ...image, like: like, comments: comments };
     });
     dispatch(addImage([...filteredTOAdd]));
-  }, [like,comments]);
+  }, [like, comments]);
 
   const handleAlbumChange = (e) => {
     setSelectedAlbum(e.target.value);
@@ -90,6 +92,19 @@ const ImageCard = ({ image }) => {
     }
   };
 
+  const handleDeleteImage = async () => {
+    try {
+      await deleteImage(image._id);
+      let filteredTOAdd = store.images.filter((img) => img?._id !== image?._id);
+      dispatch(addImage([...filteredTOAdd]));
+    } catch (error) {
+      toast.error("Failed to like image", {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
+    }
+  };
   const handleCommentChange = (e) => {
     setComment(e.target.value);
   };
@@ -144,32 +159,35 @@ const ImageCard = ({ image }) => {
         </div>
         <div className="card-body h-25">
           <h5 className="card-title">{image.title}</h5>
-          <div className="mt-3">
-            <button className="btn border-0 px-2 w-25" onClick={handleLike}>
+          <div className="mt-3 d-flex flex-wrap justify-content-between">
+            <button className="btn border-0 px-2" onClick={handleLike}>
               {like ? (
                 <FontAwesomeIcon
                   icon={faHeart}
-                  className="fa-2x"
+                  className="fa-lg"
                   style={{ color: "red" }}
                 />
               ) : (
-                <FontAwesomeIcon icon={farHeart} className="fa-2x" />
+                <FontAwesomeIcon icon={farHeart} className="fa-lg" />
               )}
             </button>
             <button
-              className="btn border-0 px-2 w-25"
+              className="btn border-0 px-2"
               onClick={() => setShowCommentModal(true)}
             >
-              <FontAwesomeIcon icon={faComment} className="fa-2x" />
+              <FontAwesomeIcon icon={faComment} className="fa-lg" />
             </button>
-            <button className="btn border-0 px-2 w-25" onClick={handleDownload}>
-              <FontAwesomeIcon icon={faCloudArrowDown} className="fa-2x" />
+            <button className="btn border-0 px-2" onClick={handleDownload}>
+              <FontAwesomeIcon icon={faCloudArrowDown} className="fa-lg" />
             </button>
             <button
-              className="btn border-0 px-2 w-25"
+              className="btn border-0 px-2"
               onClick={() => setShowAlbumModal(true)}
             >
-              <FontAwesomeIcon icon={faFolderPlus} className="fa-2x" />
+              <FontAwesomeIcon icon={faFolderPlus} className="fa-lg" />
+            </button>
+            <button className="btn border-0 px-2" onClick={handleDeleteImage}>
+              <FontAwesomeIcon icon={faTrashCan} className="fa-lg" />
             </button>
           </div>
           <div className="mt-3">
@@ -182,7 +200,7 @@ const ImageCard = ({ image }) => {
               </Modal.Header>
               <Modal.Body>
                 <ul>
-                  {comments.map((comment, index) => (
+                  {comments?.map((comment, index) => (
                     <li key={index}>{comment}</li>
                   ))}
                 </ul>

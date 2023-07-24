@@ -19,8 +19,6 @@ router.put("/:id/like", authMiddleware, imageController.likeImage);
 
 router.post("/:id/comment", authMiddleware, imageController.commentOnImage);
 
-router.get("/filter/tag/:tag", imageController.filterImagesByTag);
-
-router.post("/:id/share", imageController.shareImage);
+router.delete("/:id", authMiddleware, imageController.deleteImage);
 
 module.exports = router;

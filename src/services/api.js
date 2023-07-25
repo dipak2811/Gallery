@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getCookie } from "react-use-cookie";
 
 let UserId;
 const BASE_URL = "http://localhost:5000";
@@ -6,11 +7,18 @@ const api = axios.create({
   baseURL: BASE_URL,
 });
 
-export const setTokens = (token, user) => {
-  api.defaults.headers.common["Authorization"] = `${token}`;
-  UserId = user?.id;
-  console.log(token, UserId);
-};
+export const setTokensOnReload = () => {
+  try {
+    const token = getCookie("token");
+    const userDetailsString = getCookie("user");
+    const userDetails = userDetailsString ? JSON.parse(userDetailsString) : null;
+    api.defaults.headers.common["Authorization"] = `${token}`;
+    UserId = userDetails?.id;
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
 api.defaults.headers.post["Content-Type"] = "application/json";
 export const uploadImage = async (formData) => {
   try {
@@ -111,6 +119,14 @@ export const registerUser = async (user) => {
     const response = await api.post(`/users/register`, user);
     return response.data;
   } catch (error) {
-    throw new Error("Failed to register");
+    if (error.response) {
+      const customError = new Error(
+        `Failed to register. Status code: ${error.response.status}`
+      );
+      customError.statusCode = error.response.status;
+      throw customError;
+    } else {
+      throw error;
+    }
   }
 };

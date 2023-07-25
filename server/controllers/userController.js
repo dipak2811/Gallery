@@ -16,7 +16,6 @@ exports.loginUser = async (req, res) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    // Generate JWT token and send it in the response
     const token = jwt.sign({ userId: user._id }, secretKey);
     res.status(200).json({ user, token });
   } catch (error) {
@@ -24,11 +23,10 @@ exports.loginUser = async (req, res) => {
   }
 };
 
-// Create new user
 exports.createUser = async (req, res) => {
   const { username, password, email } = req.body;
   try {
-    const existingUser = await User.findOne({ username });
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(409).json({ error: "Username already exists" });
     }

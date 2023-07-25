@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faImages,
@@ -10,14 +10,14 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { uploadImage } from "../services/api";
+import { getAlbums, getImages, setTokensOnReload, uploadImage } from "../services/api";
 import { createAlbum } from "../services/api";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Dropdown } from "react-bootstrap";
 import { setCookie, getCookie } from "react-use-cookie";
 import { useDispatch, useSelector } from "react-redux";
 import { addImage } from "../Redux/Slices/ImageReducerSlice";
-import { addAlbum } from "../Redux/Slices/AlbumReducerSlice";
+import { addAlbum, addAllAlbums } from "../Redux/Slices/AlbumReducerSlice";
 
 function Navbar() {
   const store = useSelector((state) => state.ImageStore);
@@ -31,6 +31,38 @@ function Navbar() {
   if (userCookie) {
     User = JSON.parse(userCookie);
   }
+
+  const fetchImages = async () => {
+    try {
+      const imagesData = await getImages();
+      dispatch(addImage(imagesData));
+    } catch (error) {
+      toast.error("Failed to fetch images", {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
+    }
+  };
+
+  const fetchAlbums = async () => {
+    try {
+      const response = await getAlbums();
+      dispatch(addAllAlbums(response));
+    } catch (error) {
+      toast.error("Failed to fetch albums", {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
+    }
+  };
+
+  useEffect(() => {
+    setTokensOnReload();
+    fetchImages();
+    fetchAlbums();
+  }, []);
   const [albumData, setAlbumData] = useState({
     title: "",
   });
@@ -169,14 +201,18 @@ function Navbar() {
                     <Dropdown.Toggle
                       variant=""
                       id="dropdown-basic"
-                      style={{paddingLeft:"0px"}}
+                      style={{ paddingLeft: "0px" }}
                       className="border-0"
                     >
                       {User?.userName}{" "}
                       <FontAwesomeIcon icon={faCircleUser} className="fa-lg" />
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
-                      <Dropdown.Item role="button" style={{color:"red",backgroundColor:"white"}} onClick={handleLogout}>
+                      <Dropdown.Item
+                        role="button"
+                        style={{ color: "red", backgroundColor: "white" }}
+                        onClick={handleLogout}
+                      >
                         Logout
                       </Dropdown.Item>
                     </Dropdown.Menu>

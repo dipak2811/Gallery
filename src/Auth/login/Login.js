@@ -53,7 +53,6 @@ const Login = () => {
     try {
       const imagesData = await getImages();
       dispatch(addImage(imagesData));
-      console.log(imagesData,"imagedata");
     } catch (error) {
       toast.error("Failed to fetch images", {
         position: "bottom-right",
@@ -83,9 +82,12 @@ const Login = () => {
         userName: response?.user?.username,
         id: response?.user?._id,
       };
-      setTokens(response.token,userDetails)
-      setCookie("token", response.token, { path: "/" });
-      setCookie("user", JSON.stringify(userDetails), { path: "/" });
+      setTokens(response.token, userDetails);
+      setCookie("token", response.token, { path: "/", expires: null });
+      setCookie("user", JSON.stringify(userDetails), {
+        path: "/",
+        expires: null,
+      });
       setTimeout(() => {
         (async () => {
           await fetchAlbums();

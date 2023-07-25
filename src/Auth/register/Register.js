@@ -43,7 +43,6 @@ const Register = () => {
     }
   };
   const isPasswordValid = (password) => {
-    // Password validation logic
     const passwordRegex =
       /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=[\]{}':'\\|,.<>/?]).{8,}$/;
     if (!passwordRegex.test(password)) {
@@ -73,21 +72,26 @@ const Register = () => {
         setEmail("");
         setPassword("");
         await registerUser(payload);
-        toast.success(
-          "Registered Successfully,Please loggedIn to use gallery",
-          {
-            position: "bottom-right",
-            autoClose: 3000,
-            hideProgressBar: true,
-          }
-        );
-        navigate("/login");
-      } catch (error) {
-        toast.error(`Registration Failed`, {
+        toast.success("Registered Successfully,Please login to use gallery", {
           position: "bottom-right",
           autoClose: 3000,
           hideProgressBar: true,
         });
+        navigate("/login");
+      } catch (error) {
+        if (error.statusCode === 409) {
+          toast.error(`Email already exists. Please use a different email.`, {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+          });
+        } else {
+          toast.error(`Registration Failed`, {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+          });
+        }
       }
     }
   };

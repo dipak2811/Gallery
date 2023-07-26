@@ -6,7 +6,7 @@ You can access live application at https://gallery-web-app-c75b.onrender.com/
 
 ## Features
 - User authentication and authorization (Using JWT)
-- Add Image in all images section for particukar User
+- Add Image in all images section for particular User
 - Create Album, Add images to that album
 - Like, Comment on Image and User can also delete image
 - User can Download Image

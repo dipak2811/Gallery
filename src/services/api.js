@@ -7,6 +7,12 @@ const api = axios.create({
   baseURL: BASE_URL,
 });
 
+export const setTokens = (token, user) => {
+  api.defaults.headers.common["Authorization"] = `${token}`;
+  UserId = user?.id;
+  console.log(token, UserId);
+};
+
 export const setTokensOnReload = () => {
   try {
     const token = getCookie("token");
@@ -16,6 +22,7 @@ export const setTokensOnReload = () => {
     UserId = userDetails?.id;
   } catch (error) {
     console.log(error.message);
+    throw new Error(error.message);
   }
 }
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faImages,
@@ -10,7 +10,12 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { getAlbums, getImages, setTokensOnReload, uploadImage } from "../services/api";
+import {
+  getAlbums,
+  getImages,
+  setTokensOnReload,
+  uploadImage,
+} from "../services/api";
 import { createAlbum } from "../services/api";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Dropdown } from "react-bootstrap";
@@ -59,6 +64,9 @@ function Navbar() {
   };
 
   useEffect(() => {
+    if(!getCookie("token")){
+      return;
+    }
     setTokensOnReload();
     fetchImages();
     fetchAlbums();
@@ -154,6 +162,7 @@ function Navbar() {
     urlDetails.pathname.includes("/register")
   )
     showNav = true;
+  
   return (
     <>
       {!showNav ? (
